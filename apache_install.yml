@@ -1,0 +1,34 @@
+---
+# This is an Ansible Playbook file
+# bellow name is our arbitrary name that we write for our Playbook file
+- name: Apache Installation
+# hosts: all means the tasks must be executed in all hosts (servers)
+  hosts: all
+# become:true means the tasks must be executed in privileged mode (sudo)
+  become: true
+  
+# the tasks list 
+  tasks:
+# we write our arbitrary name for every task  
+  - name: Update repository index
+# apt is an Ansible module name. apt module is for installing packages  
+    apt:
+# update_cache: yes is the apt module argument. this argument does (sudo apt-get update) in hosts
+      update_cache: yes
+  
+  - name: Install apache2 package
+    apt:
+# apache2 is the name of the package that we want to install    
+      name: apache2
+# state: latest means we want install apache2 in latest version      
+      state: latest
+      
+  - name: Add PHP support for apache
+    apt:
+      name: libapache2-mod-php
+      state: latest
+      
+      
+  
+  
+  

@@ -1,0 +1,26 @@
+---
+
+- name: Apache Installation
+  hosts: all
+  become: true
+  
+  tasks:
+  - name: Update repository index
+    apt:
+      update_cache: yes
+  
+# For removing packages we just set 'state: absent' the absent will remove the package  
+  - name: Install apache2 package
+    apt:
+      name: apache2     
+      state: absent
+      
+  - name: Add PHP support for apache
+    apt:
+      name: libapache2-mod-php
+      state: absent
+      
+      
+  
+  
+  
