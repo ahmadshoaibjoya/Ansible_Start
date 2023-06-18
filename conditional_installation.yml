@@ -1,0 +1,51 @@
+---
+
+- name: Apache Installation
+  hosts: all
+  become: true
+  
+  tasks:
+  
+# These tasks are executable only in Ubuntu
+
+  - name: Ubuntu => Update repository index
+    apt:
+      update_cache: yes
+# (when) is a conditional keyword it is like (if). and this task will be executed when the distiribution is Ubuntu. (and, in) are also keywords.       
+    when: ansible_distribution == "Ubuntu"
+#   when: asnible_distribution in ['Ubuntu', 'Debian']
+#   when: ansible_distribution == "Ubuntu" and ansible_distribution_version == "23.04"
+  - name: Ubuntu => Install apache2 package
+    apt:
+      name: apache2     
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+      
+  - name: Ubuntu => Add PHP support for apache
+    apt:
+      name: libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+      
+      
+ # These tasks are executable only in CentOS
+ 
+  - name: CentOS => Update repository index
+    dnf:
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: CentOS => Install apache2 package
+    dnf:
+      name: httpd     
+      state: latest
+    when: ansible_distribution == "CentOS"
+      
+  - name: CentOS => Add PHP support for apache
+    dnf:
+      name: php
+      state: latest
+    when: ansible_distribution == "CentOS"     
+  
+  
+  
