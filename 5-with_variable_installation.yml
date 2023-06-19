@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  become: true
+  
+  tasks:
+  
+   - name: Install apache and php packages
+# The package module is generic package manager. It detects the package manager of the target system (such as apt, yum, dnf, zypper, etc.) and automatically uses the appropriate commands and options to perform the package management tasks.
+     package:
+# We use variables (my_apache_package, my_php_package) as a package name. We already declared these variables in the Inventory file. You can fine them there.
+       name:
+        - "{{ my_apache_package }}"
+        - "{{ my_php_package }}"
+       state: latest
+       update_cache: yes
+   
