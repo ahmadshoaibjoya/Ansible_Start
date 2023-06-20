@@ -1,0 +1,80 @@
+---
+
+# Tags in Ansible playbooks are used to categorize and selectively run specific tasks. They provide a way to group tasks and provide fine-grained control over task execution. By assigning tags to tasks, you can choose to run only specific tasks or exclude certain tasks based on their tags.
+
+- hosts: all
+  become: true 
+ 
+  pre_tasks:
+  - name: Install updates in Ubuntu
+# When you assign the always tag to a task, Ansible will execute that task every time the playbook is run.  
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+     
+  - name: Install updates in CentOS
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"  
+
+- hosts: web_servers
+  become: true
+  tasks:  
+  - name: Install apache and php packages for Ubuntu
+    tags: ubuntu,apache
+    apt:   
+      name:
+       - apache2
+       - libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+      
+  - name: Install apache and php packages for CentOS
+    tags: centos,apache
+    dnf:
+      name:
+        - httpd
+        - php
+      state: latest
+    when: ansible_distribution == "CentOS"
+    
+    
+- hosts: db_servers
+  become: true
+  tasks:
+  - name: Install MariaDB in Ubuntu
+    tags: ubuntu,db,mariadb
+    apt:
+      name: mariadb-server
+      state: latest
+    when: ansible_distribution == "Ubuntu"   
+           
+  - name: Install MariaDB in CentOS
+    tags: centos,db,mariadb
+    dnf:
+      name: mariadb
+      state: latest
+    when: ansible_distribution == "CentOS"  
+  
+    
+- hosts: file_servers
+  become: true
+  tasks:
+  - name: Install Samba package
+    tags: samba
+    package:
+      name: samba
+      state: latest
+         
+    
+    
+    
+    
+    
+    
+    
+    
