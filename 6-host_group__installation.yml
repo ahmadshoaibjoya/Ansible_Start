@@ -1,0 +1,71 @@
+---
+# These tasks are executed in all hosts
+- hosts: all
+  become: true 
+# pre_tasks is like (tasks) but it executes the task firstly before any other tasks  
+  pre_tasks:
+  - name: Install updates in Ubuntu
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+     
+  - name: Install updates in CentOS
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"  
+   
+# These tasks are executed just in web_servers hosts. You can find the web_servers in inventory file. 
+- hosts: web_servers
+  become: true
+  tasks:  
+  - name: Install apache and php packages for Ubuntu
+    apt:   
+      name:
+       - apache2
+       - libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+      
+  - name: Install apache and php packages for CentOS
+    dnf:
+      name:
+        - httpd
+        - php
+      state: latest
+    when: ansible_distribution == "CentOS"
+    
+    
+- hosts: db_servers
+  become: true
+  tasks:
+  - name: Install MariaDB in Ubuntu
+    apt:
+      name: mariadb-server
+      state: latest
+    when: ansible_distribution == "Ubuntu"   
+           
+  - name: Install MariaDB in CentOS
+    dnf:
+      name: mariadb
+      state: latest
+    when: ansible_distribution == "CentOS"  
+  
+    
+- hosts: file_servers
+  become: true
+  tasks:
+  - name: Install Samba package
+    package:
+      name: samba
+      state: latest
+         
+    
+    
+    
+    
+    
+    
+    
+    
