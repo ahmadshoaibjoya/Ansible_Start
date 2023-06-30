@@ -1,0 +1,3 @@
+[submodule "ssh-copy"]
+	path = ssh-copy
+	url = git@github.com:ahmadshoaibjoya/ssh-copy.git
