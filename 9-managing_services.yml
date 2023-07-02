@@ -1,0 +1,88 @@
+---
+
+- hosts: all
+  become: true 
+ 
+  pre_tasks:
+  - name: Install updates in Ubuntu
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+     
+  - name: Install updates in CentOS
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"  
+
+- hosts: web_servers
+  become: true
+  tasks:  
+  - name: Install apache and php packages for Ubuntu
+    tags: ubuntu,apache
+    apt:   
+      name:
+       - apache2
+       - libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+      
+  - name: Install apache and php packages for CentOS
+    tags: centos,apache
+    dnf:
+      name:
+        - httpd
+        - php
+      state: latest
+    when: ansible_distribution == "CentOS"
+ 
+  - name: Copying website file in Web Server
+    tags: ubuntu,centos,apache
+    copy:
+      src: ./files/index.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
+# With "service" module we can start, stop, etc services. Here we start httpd (apache) service in CentOS.
+  - name: Starting httpd service in CentOS
+    tags: centos,apache,httpd
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    when: ansible_distribution == "CentOS"
+    
+    
+# With "Shell" module we can run ad shell command.
+  - name: Allowing communication on port 80
+    tags: centos,httpd
+    shell: firewall-cmd --add-port=80/tcp
+    when: ansible_distribution == "CentOS"       
+ 
+# With "lineinfile" module we can modify a line in a file  
+  - name: Change the ServerAdmin email in apache config file
+    tags: centos,httpd,apache
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf 
+# It is "Reqular Expression". Modify the line which start with "ServerAdmin"       
+      regexp: "^ServerAdmin" 
+# The text we want to add      
+      line: "ServerAdmin ahmadshoaibjoya@gmail.com"
+    when: ansible_distribution == "CentOS"
+# The register keyword captures the output and other information from the task execution and stores it in the myoutput variable. By default the variable has empty value.
+    register: myoutput  
+  
+  - name: Restart apache (httpd) service in CentOS
+    tags: centos,httpd,apache
+    service:
+      name: httpd
+      state: restarted
+# When the myoutput variable is changed in previous task, then this task will be executed. 
+    when: myoutput.changed  
+ 
+    
