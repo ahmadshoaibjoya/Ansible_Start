@@ -1,0 +1,48 @@
+---
+
+- hosts: all
+  become: true 
+  pre_tasks:
+  - name: Install updates in Ubuntu
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+     
+  - name: Install updates in CentOS
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS" 
+    
+     
+# With "user" module we can manage user accounts in target hosts.
+  - name: Create berlin user
+    tags: always
+    user:
+      name: berlin
+      groups: root
+
+# with "authorized_key" module we can manage SSH authorized keys for user accounts on target hosts.  
+  - name: Add ssh key for berlin user    
+    tags: always
+    authorized_key:
+      user: berlin
+#      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIGns/yfSd0uDY4o+mWCGk0Bcq0J415I6X8El5hWdr7g ahmadshoaibjoya@gmail.com"
+
+# "lookup" is plugins. They allow you to fetch data from various sources and use it dynamically within your playbooks, such as retrieving values from files, databases, or external APIs.
+# Bellow is an Ansible template expression that uses the lookup plugin to read the contents of the file.
+# Curly brackets are the Jinja2's syntax.
+      key: "{{ lookup('file', '/home/ahmadshoaibjoya/.ssh/id_ed25519.pub') }}"
+
+  
+  - name: Add sudoers file for berlin user
+    tags: always
+    copy:
+      src: /home/ahmadshoaibjoya/Desktop/Ansible_Tutorial/files/sudoer_berlin
+      dest: /etc/sudoers.d/berlin
+      owner: root
+      group: root
+      mode: 0440
