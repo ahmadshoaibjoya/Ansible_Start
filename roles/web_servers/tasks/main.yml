@@ -1,25 +1,3 @@
----
-# First execute the 10-boostrap.yml file, then run this file.
-- hosts: all
-  become: true 
- 
-  pre_tasks:
-  - name: Update repository cache in Ubuntu
-    tags: always
-    apt:
-      update_cache: yes
-    when: ansible_distribution == "Ubuntu"
-     
-  - name: Update repository cache in CentOS
-    tags: always
-    dnf:
-      update_cache: yes
-    when: ansible_distribution == "CentOS" 
-    
-
-- hosts: web_servers
-  become: true
-  tasks:  
   - name: Install apache and php packages for Ubuntu
     tags: ubuntu,apache
     apt:   
@@ -47,7 +25,6 @@
       group: root
       mode: 0644
 
-
   - name: Starting httpd service in CentOS
     tags: centos,apache,httpd
     service:
@@ -57,17 +34,16 @@
     when: ansible_distribution == "CentOS"
     
     
-  - name: Allowing communication on port 80 in CentOS
+  - name: Allowing communication on port 80
     tags: centos,httpd
     shell: firewall-cmd --add-port=80/tcp
     when: ansible_distribution == "CentOS"       
  
-
-  - name: Change the ServerAdmin email in apache config file in CentOS
+  - name: Change the ServerAdmin email in apache config file
     tags: centos,httpd,apache
     lineinfile:
       path: /etc/httpd/conf/httpd.conf      
-      regexp: "^ServerAdmin"      
+      regexp: "^ServerAdmin"    
       line: "ServerAdmin ahmadshoaibjoya@gmail.com"
     when: ansible_distribution == "CentOS"
     register: myoutput  
@@ -78,4 +54,3 @@
       name: httpd
       state: restarted
     when: myoutput.changed  
- 

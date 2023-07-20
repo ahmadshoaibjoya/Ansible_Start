@@ -1,0 +1,6 @@
+- name: Add ssh key for berlin user    
+  tags: always
+  authorized_key:
+    user: berlin
+#   key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIGns/yfSd0uDY4o+mWCGk0Bcq0J415I6X8El5hWdr7g ahmadshoaibjoya@gmail.com"
+    key: "{{ lookup('file', '/home/ahmadshoaibjoya/.ssh/id_ed25519.pub') }}"

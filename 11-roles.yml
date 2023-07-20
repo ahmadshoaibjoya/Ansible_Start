@@ -1,0 +1,49 @@
+---
+# First execute the 10-boostrap.yml file, then run this file.
+- hosts: all
+  become: true 
+  pre_tasks:
+  - name: Update repository cache in Ubuntu
+    tags: always
+    apt:
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+     
+  - name: Update repository cache in CentOS
+    tags: always
+    dnf:
+      update_cache: yes
+    when: ansible_distribution == "CentOS" 
+
+
+
+
+- hosts: all
+  become: true
+  roles:
+    - base
+
+
+- hosts: web_servers
+  become: true
+  roles:
+    - web_servers
+
+
+- hosts: db_servers
+  become: true
+  roles:
+    - db_servers
+
+
+- hosts: file_servers
+  become: true
+  roles:
+    - file_servers
+
+
+- hosts: workstations
+  become: true
+  roles:
+    - workstations
+
