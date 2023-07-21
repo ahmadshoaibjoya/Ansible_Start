@@ -1,38 +1,22 @@
-  - name: Install apache and php packages for Ubuntu
-    tags: ubuntu,apache
-    apt:   
+  # This playbook uses our host variables which are defined in host_vars folder: apache_package_name, php_package_name, apache_service. 
+  # This playbook is for both Ubuntu and CentOS
+  - name: Install apache and php packages
+    tags: ubuntu,centos,apache,httpd
+    # We use "package" module because it is generic package manager. This task is for both Ubuntu and CentOS
+    package:
       name:
-       - apache2
-       - libapache2-mod-php
+       - "{{ apache_package_name }}"
+       - "{{ php_package_name }}"
       state: latest
-    when: ansible_distribution == "Ubuntu"
-      
-  - name: Install apache and php packages for CentOS
-    tags: centos,apache
-    dnf:
-      name:
-        - httpd
-        - php
-      state: latest
-    when: ansible_distribution == "CentOS"
- 
-  - name: Copying website file in Web Server
-    tags: ubuntu,centos,apache
-    copy:
-      src: ./files/index.html
-      dest: /var/www/html/index.html
-      owner: root
-      group: root
-      mode: 0644
 
-  - name: Starting httpd service in CentOS
+
+  - name: Starting and enabling apache service
     tags: centos,apache,httpd
     service:
-      name: httpd
+      name: "{{ apache_service }}"
       state: started
       enabled: yes
-    when: ansible_distribution == "CentOS"
-    
+
     
   - name: Allowing communication on port 80
     tags: centos,httpd
@@ -44,13 +28,21 @@
     lineinfile:
       path: /etc/httpd/conf/httpd.conf      
       regexp: "^ServerAdmin"    
-      line: "ServerAdmin ahmadshoaibjoya@gmail.com"
+      line: "ServerAdmin myemail@gmail.com"
     when: ansible_distribution == "CentOS"
-    register: myoutput  
-  
-  - name: Restart apache (httpd) service in CentOS
-    tags: centos,httpd,apache
-    service:
-      name: httpd
-      state: restarted
-    when: myoutput.changed  
+    notify: restart_apache
+  # The "notify" specifies Handler to be triggered,
+  # and "restart_apache" is our created hander name.
+  # We defined the hander in the handlers folder.
+
+
+
+  - name: Copying website file in Web Server
+    tags: ubuntu,centos,apache
+    copy:
+      src: ./files/index.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+

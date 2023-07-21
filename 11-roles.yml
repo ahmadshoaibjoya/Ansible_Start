@@ -22,7 +22,7 @@
   become: true
   roles:
     - base
-
+# For every role (base, web_servers,...) we have folder in roles folder
 
 - hosts: web_servers
   become: true

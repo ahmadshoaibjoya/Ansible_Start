@@ -1,0 +1,8 @@
+# This is web_servers host group -> web_host_1 => Ubuntu
+
+### Note: The name of this file is based on alias that we defined in Inventory file (12-host_variables.ini),
+### if you don't use alias, you should use IP as a name for this file.
+
+apache_package_name: apache2
+apache_service: apache2
+php_package_name: libapache2-mod-php
