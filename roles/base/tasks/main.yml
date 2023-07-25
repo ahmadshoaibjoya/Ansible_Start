@@ -4,3 +4,22 @@
     user: berlin
 #   key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIGns/yfSd0uDY4o+mWCGk0Bcq0J415I6X8El5hWdr7g ahmadshoaibjoya@gmail.com"
     key: "{{ lookup('file', '/home/ahmadshoaibjoya/.ssh/id_ed25519.pub') }}"
+
+
+# The template module in Ansible is used to generate dynamic files by combining a template file with variables and expressions.
+# It allows you to create configuration files, scripts, or any other text-based files with customized content 
+# based on the values of variables and conditions defined in your playbook.
+
+- name: Generate sshd_config file from template
+  tags: ssh,ubuntu,centos
+  template:
+    # The ssh_template_file variable is in host_vars folder
+    src: "{{ ssh_template_file }}"
+    # We create sshd_config configuration file in the target host
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_ssh_service
+
+

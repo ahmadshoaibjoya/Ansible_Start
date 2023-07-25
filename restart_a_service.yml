@@ -1,0 +1,10 @@
+---
+# all hosts expect workstations group
+- hosts: all:!workstations
+  become: true
+  tasks: 
+  - name: Restart SSH service 
+    service:
+      name: ssh 
+      state: restarted 
+    when: ansible_distribution == "Ubuntu"

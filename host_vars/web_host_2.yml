@@ -3,3 +3,6 @@
 apache_package_name: httpd
 apache_service: httpd
 php_package_name: php
+ssh_users: "root berlin"
+ssh_template_file: sshd_config_centos.j2
+ssh_server_service_name: sshd
